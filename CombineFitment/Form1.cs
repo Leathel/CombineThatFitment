@@ -172,7 +172,7 @@ namespace CombineFitment
                             time = time + timeForCar;
                             averageTime = time / linesCompleted;
 
-                            // this will tell the approximate time of completion
+                            // this will tell the approximate time of completion in a date format
                             timeRemaining.Text = Convert.ToString(DateTime.Now.AddMinutes(((averageTime * linesRemaining)/1000)/60));
 
                         }));
