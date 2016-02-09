@@ -1,6 +1,6 @@
 ﻿namespace CombineFitment
 {
-    partial class Form1
+    partial class CombineFitment
     {
         /// <summary>
         /// Required designer variable.
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CombineFitment));
             this.fitmentDataGridView = new System.Windows.Forms.DataGridView();
             this.readFileTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -204,7 +205,7 @@
             this.timeRemaining.TabIndex = 15;
             this.timeRemaining.Text = "0.0 seconds";
             // 
-            // Form1
+            // CombineFitment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -224,8 +225,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.readFileTextBox);
             this.Controls.Add(this.fitmentDataGridView);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "CombineFitment";
+            this.Text = "Combine Fitment";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.fitmentDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.writeDataGridView)).EndInit();
