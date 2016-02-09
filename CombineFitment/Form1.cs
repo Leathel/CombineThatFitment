@@ -182,12 +182,16 @@ namespace CombineFitment
 
 
                 }
-
-                loadingBar.Visible = false;
-                timeRemaining.Visible = false;
-                estTimeRemainingLabel.Visible = false;
-                resultGridView.DataSource = resultDataTable;
-
+                //set everything back to default once completed
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    loadingBar.Visible = false;
+                    timeRemaining.Visible = false;
+                    estTimeRemainingLabel.Visible = false;
+                    resultGridView.DataSource = resultDataTable;
+                    exportToCSV(resultDataTable);
+                }));
+                
 
 
 
@@ -196,7 +200,40 @@ namespace CombineFitment
             }
             catch (Exception exc)
             {
-
+                // still have to put in some exeptions
+            }
+        }
+        private void exportToCSV(DataTable resultDataTable)
+        {
+            using (StreamWriter csvWriter = new StreamWriter(newFileNameTextBox.Text, true))
+            {
+                int iColCount = resultDataTable.Columns.Count;
+                for (int i = 0; i < iColCount; i++)
+                {
+                    csvWriter.Write(resultDataTable.Columns[i]);
+                    if (i < iColCount - 1)
+                    {
+                        csvWriter.Write(",");
+                    }
+                }
+                csvWriter.Write(csvWriter.NewLine);
+                // Now write all the rows.
+                foreach (DataRow dr in resultDataTable.Rows)
+                {
+                    for (int i = 0; i < iColCount; i++)
+                    {
+                        if (!Convert.IsDBNull(dr[i]))
+                        {
+                            csvWriter.Write(dr[i].ToString());
+                        }
+                        if (i < iColCount - 1)
+                        {
+                            csvWriter.Write(System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+                        }
+                    }
+                    csvWriter.Write(csvWriter.NewLine);
+                }
+                csvWriter.Close();
             }
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
