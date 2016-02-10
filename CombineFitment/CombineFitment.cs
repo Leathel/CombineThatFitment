@@ -55,7 +55,6 @@ namespace CombineFitment
 
                 DataTable writeDataTable = new DataTable();
                 writeDataTable.Columns.Add("Fitment");
-                writeDataTable.Columns.Add("Sku");
                 filePathCars = writeFileTextBox.Text;
                 using (StreamReader streamReaderWrite = new StreamReader(filePathCars))
                 {
@@ -64,7 +63,7 @@ namespace CombineFitment
                     while (!streamReaderWrite.EndOfStream)
                     {
                         totalDataWrite = streamReaderWrite.ReadLine().Split(',');
-                        writeDataTable.Rows.Add(totalDataWrite[0], totalDataWrite[1]);
+                        writeDataTable.Rows.Add(totalDataWrite[0]);
                     }
                 }
 
@@ -86,7 +85,7 @@ namespace CombineFitment
 
                         }
                     }
-                    catch(Exception dictionaryException)
+                    catch (Exception dictionaryException)
                     {
                         MessageBox.Show(dictionaryException.ToString());
                     }
@@ -103,8 +102,16 @@ namespace CombineFitment
         }
         private void writeButton_Click(object sender, EventArgs e)
         {
-            Thread workerThread = new Thread(ConversionTime, 0);
-            workerThread.Start();
+            if (newFileNameTextBox.Text == "" || newFileNameTextBox.Text == null || newFileNameTextBox.Text == string.Empty)
+            {
+                MessageBox.Show("You must enter in an output file!\n Also make sure its empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                Thread workerThread = new Thread(ConversionTime, 0);
+                workerThread.Start();
+            }
+
 
         }
         private void ConversionTime()
@@ -115,14 +122,15 @@ namespace CombineFitment
                 DataTable resultDataTable = new DataTable();
                 // add columns
                 //resultDataTable.Columns.Add("Fitment");
-                //The car data will be parsed into these 4 columns
+                //The car data will be parsed into these 5 columns
                 resultDataTable.Columns.Add("Year");
                 resultDataTable.Columns.Add("Make");
                 resultDataTable.Columns.Add("Model");
                 resultDataTable.Columns.Add("Trim");
+                resultDataTable.Columns.Add("Engine");
 
                 // this column will remain the same
-                resultDataTable.Columns.Add("Sku's");
+                resultDataTable.Columns.Add("Skus");
 
                 //initiate the timer
                 double time = 0.0;
@@ -166,10 +174,10 @@ namespace CombineFitment
                     while (!carReader.EndOfStream)
                     {
                         var watch = Stopwatch.StartNew();
-                        string currentCarString = carReader.ReadLine(); // get the current car of the line were on
-                        currentVehicle = currentCarString.Substring(0, currentCarString.IndexOf(",")); //parse out the exact car string
-                        //MessageBox.Show(currentVehicle);
-                        //newCSVArray = carReader.ReadLine().Split(',');
+                        currentVehicle = carReader.ReadLine(); // get the current car of the line were on
+                                                               // currentVehicle = currentCarString.Substring(0, currentCarString.IndexOf(",")); //parse out the exact car string
+                                                               //MessageBox.Show(currentVehicle);
+                                                               //newCSVArray = carReader.ReadLine().Split(',');
 
                         using (StreamReader skuAndFitmentReader = new StreamReader(filePathFitment)) //open a new stream reader and search for the fitment data and return the sku(s)
                         {
@@ -199,14 +207,15 @@ namespace CombineFitment
                             }
                             if (combinedSkus != "" && combinedSkus != null && combinedSkus != string.Empty)
                             {
-
+                                combinedSkus = combinedSkus.Replace('"', Convert.ToChar(" "));
+                                combinedSkus = combinedSkus.Replace(" ", string.Empty);
                                 combinedSkus = '"' + combinedSkus + '"';
+
                             }
 
-                            //combinedSkus = combinedSkus.Replace('"', Convert.ToChar(" "));
-                            //combinedSkus = combinedSkus.Replace(" ", string.Empty);
+
                             string[] splitCarArray = new string[4];
-                            splitCarArray = currentCarString.Split('|');
+                            splitCarArray = currentVehicle.Split('|');
 
 
                             ////////////////
@@ -214,8 +223,9 @@ namespace CombineFitment
                             string currentMake = splitCarArray[1];
                             string currentModel = splitCarArray[2];
                             string currentTrim = splitCarArray[3];
+                            string currentEngine = splitCarArray[4];
 
-                            resultDataTable.Rows.Add(currentYear, currentMake, currentModel, currentTrim, combinedSkus); // here we will add the cars with the skus to the Grid
+                            resultDataTable.Rows.Add(currentYear, currentMake, currentModel, currentTrim, currentEngine, combinedSkus); // here we will add the cars with the skus to the Grid
                         }
                         this.Invoke(new MethodInvoker(delegate ()
                         {
@@ -306,7 +316,7 @@ namespace CombineFitment
                     string combinedSkus = "";
                     string currentLine;
 
-                    
+
                     string[] skuAndFitmentArray = new string[File.ReadAllLines(filePathFitment).Length];
                     string currentVehicle;
 
@@ -315,14 +325,14 @@ namespace CombineFitment
                     //{
                     //    string line; while ((line = reader.ReadLine()) != null)
                     //    { // splitting and stuff}
-                            ///////////////////////////
+                    ///////////////////////////
 
 
 
-                            //loop through the csv and write to the grid we have made
+                    //loop through the csv and write to the grid we have made
 
-                            // MessageBox.Show("we are inside the car reader before lookingt at each car");
-                            while (!carReader.EndOfStream)
+                    // MessageBox.Show("we are inside the car reader before lookingt at each car");
+                    while (!carReader.EndOfStream)
                     {
                         var watch = Stopwatch.StartNew();
                         string currentCarString = carReader.ReadLine(); // get the current car of the line were on
