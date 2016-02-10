@@ -29,33 +29,18 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CombineFitment));
-            this.fitmentDataGridView = new System.Windows.Forms.DataGridView();
             this.readFileTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.readButton = new System.Windows.Forms.Button();
-            this.writeDataGridView = new System.Windows.Forms.DataGridView();
-            this.writeButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.writeFileTextBox = new System.Windows.Forms.TextBox();
-            this.resultGridView = new System.Windows.Forms.DataGridView();
             this.label3 = new System.Windows.Forms.Label();
             this.newFileNameTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.loadingBar = new System.Windows.Forms.ProgressBar();
             this.estTimeRemainingLabel = new System.Windows.Forms.Label();
             this.timeRemaining = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.fitmentDataGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.writeDataGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.resultGridView)).BeginInit();
             this.SuspendLayout();
-            // 
-            // fitmentDataGridView
-            // 
-            this.fitmentDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.fitmentDataGridView.Location = new System.Drawing.Point(12, 65);
-            this.fitmentDataGridView.Name = "fitmentDataGridView";
-            this.fitmentDataGridView.Size = new System.Drawing.Size(347, 391);
-            this.fitmentDataGridView.TabIndex = 0;
             // 
             // readFileTextBox
             // 
@@ -65,7 +50,7 @@
             this.readFileTextBox.Name = "readFileTextBox";
             this.readFileTextBox.Size = new System.Drawing.Size(178, 20);
             this.readFileTextBox.TabIndex = 1;
-            this.readFileTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\testing\\smallFitmentTest.csv";
+            this.readFileTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\Magento_fitment.csv";
             this.readFileTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
@@ -91,29 +76,6 @@
             this.readButton.UseVisualStyleBackColor = true;
             this.readButton.Click += new System.EventHandler(this.readButton_Click);
             // 
-            // writeDataGridView
-            // 
-            this.writeDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.writeDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.writeDataGridView.Location = new System.Drawing.Point(375, 65);
-            this.writeDataGridView.Name = "writeDataGridView";
-            this.writeDataGridView.Size = new System.Drawing.Size(354, 391);
-            this.writeDataGridView.TabIndex = 4;
-            // 
-            // writeButton
-            // 
-            this.writeButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.writeButton.Location = new System.Drawing.Point(616, 39);
-            this.writeButton.Name = "writeButton";
-            this.writeButton.Size = new System.Drawing.Size(112, 23);
-            this.writeButton.TabIndex = 7;
-            this.writeButton.Text = "Search and Write";
-            this.writeButton.UseVisualStyleBackColor = true;
-            this.writeButton.Click += new System.EventHandler(this.writeButton_Click);
-            // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -133,18 +95,7 @@
             this.writeFileTextBox.Name = "writeFileTextBox";
             this.writeFileTextBox.Size = new System.Drawing.Size(178, 20);
             this.writeFileTextBox.TabIndex = 5;
-            this.writeFileTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\testing\\smallCarsTest.csv";
-            // 
-            // resultGridView
-            // 
-            this.resultGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.resultGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.resultGridView.Location = new System.Drawing.Point(744, 65);
-            this.resultGridView.Name = "resultGridView";
-            this.resultGridView.Size = new System.Drawing.Size(354, 391);
-            this.resultGridView.TabIndex = 9;
+            this.writeFileTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\ebayFITMENT.csv";
             // 
             // label3
             // 
@@ -219,38 +170,26 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.newFileNameTextBox);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.resultGridView);
-            this.Controls.Add(this.writeButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.writeFileTextBox);
-            this.Controls.Add(this.writeDataGridView);
             this.Controls.Add(this.readButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.readFileTextBox);
-            this.Controls.Add(this.fitmentDataGridView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CombineFitment";
             this.Text = "Combine Fitment";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.fitmentDataGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.writeDataGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.resultGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView fitmentDataGridView;
         private System.Windows.Forms.TextBox readFileTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button readButton;
-        private System.Windows.Forms.DataGridView writeDataGridView;
-        private System.Windows.Forms.Button writeButton;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox writeFileTextBox;
-        private System.Windows.Forms.DataGridView resultGridView;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox newFileNameTextBox;
         private System.Windows.Forms.Label label4;
