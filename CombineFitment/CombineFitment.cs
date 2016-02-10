@@ -42,12 +42,21 @@ namespace CombineFitment
                 {
                     string[] totalData = new string[File.ReadAllLines(filePathFitment).Length];
                     totalData = streamReader.ReadLine().Split(',');
-                    while (!streamReader.EndOfStream)
+                   // MessageBox.Show(totalData.Length.ToString());
+                    if (totalData.Length != 2)
                     {
-                        totalData = streamReader.ReadLine().Split(',');
-                        dataTable.Rows.Add(totalData[0], totalData[1]);
+                        MessageBox.Show("Your file must have 2 columns", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    fitmentDataGridView.DataSource = dataTable;
+                    else
+                    {
+                        while (!streamReader.EndOfStream)
+                        {
+                            totalData = streamReader.ReadLine().Split(',');
+                            dataTable.Rows.Add(totalData[0], totalData[1]);
+                        }
+                        fitmentDataGridView.DataSource = dataTable;
+                    }
+
                 }
 
 
@@ -60,11 +69,19 @@ namespace CombineFitment
                 {
                     string[] totalDataWrite = new string[File.ReadAllLines(filePathCars).Length];
                     totalDataWrite = streamReaderWrite.ReadLine().Split(',');
-                    while (!streamReaderWrite.EndOfStream)
+                    if (totalDataWrite.Length != 1)
                     {
-                        totalDataWrite = streamReaderWrite.ReadLine().Split(',');
-                        writeDataTable.Rows.Add(totalDataWrite[0]);
+                        MessageBox.Show("Your file must have 2 columns", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                    else
+                    {
+                        while (!streamReaderWrite.EndOfStream)
+                        {
+                            totalDataWrite = streamReaderWrite.ReadLine().Split(',');
+                            writeDataTable.Rows.Add(totalDataWrite[0]);
+                        }
+                    }
+
                 }
 
 
@@ -73,15 +90,18 @@ namespace CombineFitment
                 //here we will create the dictionary for all the cars
                 //hopefully it works lol
 
-                var myDictionary = new Dictionary<string, List<string>>();
+                var myDictionary = new Dictionary<string, string>();
                 // myDictionary.Add(File.ReadAllLines(filePathCars).Select(l => l.Split(',')), );
-                foreach (DataRow line in writeDataTable.Rows)
+                MessageBox.Show(dataTable.Rows.Count.ToString());
+                foreach (DataRow line in dataTable.Rows)
                 {
                     try
                     {
                         if (!myDictionary.ContainsKey(line[0].ToString()))
                         {
-                            myDictionary.Add(line[0].ToString(), new List<string>());
+                            string sku = line[0].ToString();
+                            string vehicles = line[0].ToString();
+                            myDictionary.Add(sku.Substring(0,sku.IndexOf(',')), vehicles.Substring(vehicles.IndexOf(',')));
 
                         }
                     }
@@ -94,13 +114,15 @@ namespace CombineFitment
 
 
                 }
+                int numOfLines = myDictionary.Count();
+                MessageBox.Show(numOfLines.ToString());
             }
             catch (Exception ex)
             {
 
             }
         }
-        private void writeButton_Click(object sender, EventArgs e)
+        private void writeButton_Click(object sender, EventArgs e )
         {
             if (newFileNameTextBox.Text == "" || newFileNameTextBox.Text == null || newFileNameTextBox.Text == string.Empty)
             {
@@ -111,6 +133,9 @@ namespace CombineFitment
                 Thread workerThread = new Thread(ConversionTime, 0);
                 workerThread.Start();
             }
+
+            //Thread workerThread1 = new Thread(dictionaryConversionTime(Dictionary<string,string> myDictionary), 0);
+            //workerThread1.Start();
 
 
         }
@@ -269,7 +294,7 @@ namespace CombineFitment
             }
         }
 
-        private void dictionaryConversionTime()
+        private void dictionaryConversionTime(Dictionary<string,string> myDictionary)
         {
             try
             {
@@ -297,6 +322,7 @@ namespace CombineFitment
                 //using (StreamWriter resultFile = new StreamWriter(newFileNameTextBox.Text))
                 //{
                 int numOfLines = File.ReadAllLines(filePathCars).Length;
+                numOfLines = myDictionary.Count();
                 int linesRemaining = numOfLines;
                 int linesCompleted = 0;
                 this.Invoke(new MethodInvoker(delegate ()
