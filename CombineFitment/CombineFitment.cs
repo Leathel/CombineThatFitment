@@ -50,9 +50,7 @@ namespace CombineFitment
             var myDictionary = new Dictionary<string, List<string>>();
 
 
-            DataTable skuAndFitmentDataTable = new DataTable();
-            skuAndFitmentDataTable.Columns.Add("Sku");
-            skuAndFitmentDataTable.Columns.Add("Fitment");
+
             filePathFitment = readFileTextBox.Text;
             using (StreamReader streamReader = new StreamReader(filePathFitment))
             {
@@ -68,7 +66,7 @@ namespace CombineFitment
                     while (!streamReader.EndOfStream)
                     {
                         totalData = streamReader.ReadLine().Split(',');
-                        skuAndFitmentDataTable.Rows.Add(totalData[0], totalData[1]);
+
                     }
                     this.Invoke(new MethodInvoker(delegate ()
                     {
@@ -82,11 +80,11 @@ namespace CombineFitment
 
             //////////////First and second table split//////////////////////
 
-           
-            filePathCars = writeFileTextBox.Text;
-            
 
-            
+            filePathCars = writeFileTextBox.Text;
+
+
+
 
 
             //here we will create the dictionary for all the cars
@@ -94,65 +92,20 @@ namespace CombineFitment
 
 
             // myDictionary.Add(File.ReadAllLines(filePathCars).Select(l => l.Split(',')), );
-            foreach (DataRow line in skuAndFitmentDataTable.Rows)
+            //foreach (DataRow line in skuAndFitmentDataTable.Rows)
+            using (StreamReader sr = new StreamReader(filePathCars))
             {
-                try
+                string line;
+                sr.ReadLine();
+                while ((line = sr.ReadLine()) != null)
                 {
-                    string[] allCars = line[1].ToString().Split(new[] { "^^" }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string car in allCars)
-                    {
-                        //if (!myDictionary.ContainsKey(car))
-                        //{
-                        //    myDictionary.Add(car, line[0].ToString());
-
-                        //}
-                        List<string> list;
-                        if (!myDictionary.TryGetValue(car, out list))
-                        {
-                            myDictionary[car] = new List<string> { line[0].ToString() };
-                        }
-                        else
-                        {
-                            list.Add(line[0].ToString());
-                        }
-
-                    }
-
-
-                }
-                catch (Exception dictionaryException)
-                {
-                    MessageBox.Show(dictionaryException.ToString());
+                    myDictionary[line.Split(',')[0]] = new List<string>();
                 }
 
 
 
 
             }
-
-
-
-
-
-
-
-
-
-
-            // create new table
-            DataTable resultDataTable = new DataTable();
-            // add columns
-            //resultDataTable.Columns.Add("Fitment");
-            //The car data will be parsed into these 4 columns
-            resultDataTable.Columns.Add("Year");
-            resultDataTable.Columns.Add("Make");
-            resultDataTable.Columns.Add("Model");
-            resultDataTable.Columns.Add("Trim");
-            resultDataTable.Columns.Add("Engine");
-
-            // this column will remain the same
-            resultDataTable.Columns.Add("Sku's");
-
             //initiate the timer
             double time = 0.0;
             double averageTime = 0.0;
@@ -163,29 +116,43 @@ namespace CombineFitment
             //write the new file
             //using (StreamWriter resultFile = new StreamWriter(newFileNameTextBox.Text))
             //{
-            
 
 
 
 
-            using (StreamReader sr = new StreamReader(filePathCars))
-            using (StreamWriter sw = new StreamWriter(newFileNameTextBox.Text))
+
+            using (StreamReader sr = new StreamReader(filePathFitment))
             {
                 string line;
 
                 while ((line = sr.ReadLine()) != null)
                 {
-                    line = line.Split(',')[0];
-
-                    string combinedSkus = "";
-                    var watch = Stopwatch.StartNew();
-                    List<string> skus;
-                    if (myDictionary.TryGetValue(line, out skus))
+                    var split = line.Split(',');
+                    string[] allCars = split[1].Split(new[] { "^^" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string car in allCars)
                     {
-                        combinedSkus = string.Join(",", skus);
+                        //if (!myDictionary.ContainsKey(car))
+                        //{
+                        //    myDictionary.Add(car, line[0].ToString());
+
+                        //}
+                        List<string> list;
+                        if (myDictionary.TryGetValue(car, out list))
+                        {
+                            list.Add(split[0]);
+                        }
 
                     }
-                    string[] splitCarArray = line.Split('|');
+                }
+            }
+            using (StreamWriter sw = new StreamWriter(newFileNameTextBox.Text))
+            {
+                foreach (var kvp in myDictionary)
+                {
+                    string combinedSkus = String.Join(",",kvp.Value);
+                    var watch = Stopwatch.StartNew();
+                  
+                    string[] splitCarArray = kvp.Key.Split('|');
                     if (splitCarArray.Length == 5)
                     {
                         //split the car string up
@@ -194,60 +161,21 @@ namespace CombineFitment
                         string currentModel = splitCarArray[2];
                         string currentTrim = splitCarArray[3];
                         string currentEngine = splitCarArray[4];
-                         // here we will add the cars with the skus to the Grid
+                        // here we will add the cars with the skus to the Grid
                         sw.WriteLine($"{currentYear},{currentMake},{currentModel},{currentTrim},{currentEngine},\"{combinedSkus}\"");
-
                     }
-                    
-                  
+
+
+
                 }
-                
 
 
             }
 
-            this.Invoke(new MethodInvoker(delegate ()
-            {
-               
-                //exportToCSV(resultDataTable);
-            }));
-
         }
 
 
-        private void exportToCSV(DataTable resultDataTable)
-        {
-            using (StreamWriter csvWriter = new StreamWriter(newFileNameTextBox.Text, true))
-            {
-                int iColCount = resultDataTable.Columns.Count;
-                for (int i = 0; i < iColCount; i++)
-                {
-                    csvWriter.Write(resultDataTable.Columns[i]);
-                    if (i < iColCount - 1)
-                    {
-                        csvWriter.Write(",");
-                    }
-                }
-                csvWriter.Write(csvWriter.NewLine);
-                // Now write all the rows.
-                foreach (DataRow dr in resultDataTable.Rows)
-                {
-                    for (int i = 0; i < iColCount; i++)
-                    {
-                        if (!Convert.IsDBNull(dr[i]))
-                        {
-                            csvWriter.Write(dr[i].ToString());
-                        }
-                        if (i < iColCount - 1)
-                        {
-                            csvWriter.Write(System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-                        }
-                    }
-                    csvWriter.Write(csvWriter.NewLine);
-                }
-                csvWriter.Close();
-            }
-        }
+       
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
