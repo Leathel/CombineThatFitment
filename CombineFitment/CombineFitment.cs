@@ -21,8 +21,7 @@ namespace CombineFitment
         public CombineFitment()
         {
             InitializeComponent();
-            loadingBar.Visible = false;
-            timeRemaining.Visible = false;
+            
 
         }
 
@@ -192,6 +191,11 @@ namespace CombineFitment
         }
 
         private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
         {
 
         }
