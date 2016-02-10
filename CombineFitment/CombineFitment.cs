@@ -17,6 +17,7 @@ namespace CombineFitment
     {
         string filePathCars;
         string filePathFitment;
+
         public CombineFitment()
         {
             InitializeComponent();
@@ -32,97 +33,252 @@ namespace CombineFitment
 
         private void readButton_Click(object sender, EventArgs e)
         {
-            try
+            if (string.IsNullOrWhiteSpace(newFileNameTextBox.Text))
             {
-                DataTable dataTable = new DataTable();
-                dataTable.Columns.Add("Sku");
-                dataTable.Columns.Add("Fitment");
-                filePathFitment = readFileTextBox.Text;
-                using (StreamReader streamReader = new StreamReader(filePathFitment))
-                {
-                    string[] totalData = new string[File.ReadAllLines(filePathFitment).Length];
-                    totalData = streamReader.ReadLine().Split(',');
-                   // MessageBox.Show(totalData.Length.ToString());
-                    if (totalData.Length != 2)
-                    {
-                        MessageBox.Show("Your file must have 2 columns", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        while (!streamReader.EndOfStream)
-                        {
-                            totalData = streamReader.ReadLine().Split(',');
-                            dataTable.Rows.Add(totalData[0], totalData[1]);
-                        }
-                        fitmentDataGridView.DataSource = dataTable;
-                    }
-
-                }
-
-
-                //////////////First and second table split//////////////////////
-
-                DataTable writeDataTable = new DataTable();
-                writeDataTable.Columns.Add("Fitment");
-                filePathCars = writeFileTextBox.Text;
-                using (StreamReader streamReaderWrite = new StreamReader(filePathCars))
-                {
-                    string[] totalDataWrite = new string[File.ReadAllLines(filePathCars).Length];
-                    totalDataWrite = streamReaderWrite.ReadLine().Split(',');
-                    if (totalDataWrite.Length != 1)
-                    {
-                        MessageBox.Show("Your file must have 2 columns", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        while (!streamReaderWrite.EndOfStream)
-                        {
-                            totalDataWrite = streamReaderWrite.ReadLine().Split(',');
-                            writeDataTable.Rows.Add(totalDataWrite[0]);
-                        }
-                    }
-
-                }
-
-
-                writeDataGridView.DataSource = writeDataTable;
-
-                //here we will create the dictionary for all the cars
-                //hopefully it works lol
-
-                var myDictionary = new Dictionary<string, string>();
-                // myDictionary.Add(File.ReadAllLines(filePathCars).Select(l => l.Split(',')), );
-                MessageBox.Show(dataTable.Rows.Count.ToString());
-                foreach (DataRow line in dataTable.Rows)
-                {
-                    try
-                    {
-                        if (!myDictionary.ContainsKey(line[0].ToString()))
-                        {
-                            string sku = line[0].ToString();
-                            string vehicles = line[0].ToString();
-                            myDictionary.Add(sku.Substring(0,sku.IndexOf(',')), vehicles.Substring(vehicles.IndexOf(',')));
-
-                        }
-                    }
-                    catch (Exception dictionaryException)
-                    {
-                        MessageBox.Show(dictionaryException.ToString());
-                    }
-
-
-
-
-                }
-                int numOfLines = myDictionary.Count();
-                MessageBox.Show(numOfLines.ToString());
+                MessageBox.Show("You must enter in an output file!\n Also make sure its empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception ex)
+
+            else
             {
-
+                Thread workerThread = new Thread(readAndWrite, 0);
+                workerThread.Start();
             }
+
         }
-        private void writeButton_Click(object sender, EventArgs e )
+        private void readAndWrite()
+        {
+            var myDictionary = new Dictionary<string, List<string>>();
+
+
+            DataTable skuAndFitmentDataTable = new DataTable();
+            skuAndFitmentDataTable.Columns.Add("Sku");
+            skuAndFitmentDataTable.Columns.Add("Fitment");
+            filePathFitment = readFileTextBox.Text;
+            using (StreamReader streamReader = new StreamReader(filePathFitment))
+            {
+                string[] totalData = new string[File.ReadAllLines(filePathFitment).Length];
+                totalData = streamReader.ReadLine().Split(',');
+                // MessageBox.Show(totalData.Length.ToString());
+                if (totalData.Length != 2)
+                {
+                    MessageBox.Show("Your file must have 2 columns", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    while (!streamReader.EndOfStream)
+                    {
+                        totalData = streamReader.ReadLine().Split(',');
+                        skuAndFitmentDataTable.Rows.Add(totalData[0], totalData[1]);
+                    }
+                    this.Invoke(new MethodInvoker(delegate ()
+                    {
+                        fitmentDataGridView.DataSource = skuAndFitmentDataTable;
+                    }));
+                    
+                }
+
+            }
+
+
+            //////////////First and second table split//////////////////////
+
+            DataTable carsDataTable = new DataTable();
+            carsDataTable.Columns.Add("Fitment");
+            filePathCars = writeFileTextBox.Text;
+            using (StreamReader streamReaderWrite = new StreamReader(filePathCars))
+            {
+                string[] totalDataWrite = new string[File.ReadAllLines(filePathCars).Length];
+                totalDataWrite = streamReaderWrite.ReadLine().Split(',');
+                if (totalDataWrite.Length != 1)
+                {
+                    MessageBox.Show("Your file must have 2 columns", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    while (!streamReaderWrite.EndOfStream)
+                    {
+                        totalDataWrite = streamReaderWrite.ReadLine().Split(',');
+                        carsDataTable.Rows.Add(totalDataWrite[0]);
+                    }
+                }
+
+            }
+
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                writeDataGridView.DataSource = carsDataTable;
+            }));
+
+
+            //here we will create the dictionary for all the cars
+            //hopefully it works lol
+
+
+            // myDictionary.Add(File.ReadAllLines(filePathCars).Select(l => l.Split(',')), );
+            foreach (DataRow line in skuAndFitmentDataTable.Rows)
+            {
+                try
+                {
+                    string[] allCars = line[1].ToString().Split(new[] { "^^" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string car in allCars)
+                    {
+                        //if (!myDictionary.ContainsKey(car))
+                        //{
+                        //    myDictionary.Add(car, line[0].ToString());
+
+                        //}
+                        List<string> list;
+                        if (!myDictionary.TryGetValue(car, out list))
+                        {
+                            myDictionary[car] = new List<string> { line[0].ToString() };
+                        }
+                        else
+                        {
+                            list.Add(line[0].ToString());
+                        }
+
+                    }
+
+
+                }
+                catch (Exception dictionaryException)
+                {
+                    MessageBox.Show(dictionaryException.ToString());
+                }
+
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+            // create new table
+            DataTable resultDataTable = new DataTable();
+            // add columns
+            //resultDataTable.Columns.Add("Fitment");
+            //The car data will be parsed into these 4 columns
+            resultDataTable.Columns.Add("Year");
+            resultDataTable.Columns.Add("Make");
+            resultDataTable.Columns.Add("Model");
+            resultDataTable.Columns.Add("Trim");
+            resultDataTable.Columns.Add("Engine");
+
+            // this column will remain the same
+            resultDataTable.Columns.Add("Sku's");
+
+            //initiate the timer
+            double time = 0.0;
+            double averageTime = 0.0;
+
+            //find the fitment sheet
+            string justFitment = writeFileTextBox.Text;
+
+            //write the new file
+            //using (StreamWriter resultFile = new StreamWriter(newFileNameTextBox.Text))
+            //{
+
+            int numOfLines = myDictionary.Count;
+            int linesRemaining = numOfLines;
+            int linesCompleted = 0;
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                timeRemaining.Visible = true;
+                estTimeRemainingLabel.Visible = true;
+                loadingBar.Visible = true;
+                loadingBar.Minimum = 0;
+                loadingBar.Maximum = numOfLines;
+                loadingBar.Value = 0;
+                loadingBar.Step = 1;
+            }));
+
+            using (StreamReader carReader = new StreamReader(filePathCars))
+            {
+
+                
+                string currentLine;
+                string currentVehicle;
+                
+
+                while ((currentVehicle = carReader.ReadLine()) != null)
+                {
+                    string combinedSkus = "";
+                    var watch = Stopwatch.StartNew();
+                    List<string> skus;
+                    if (myDictionary.TryGetValue(currentVehicle, out skus))
+                    {
+                         combinedSkus = string.Join(",", skus);
+                        
+                    }
+                    string[] splitCarArray = currentVehicle.Split('|');
+                    if(splitCarArray.Length == 5)
+                    {
+                        string currentYear = splitCarArray[0];
+                        string currentMake = splitCarArray[1];
+                        string currentModel = splitCarArray[2];
+                        string currentTrim = splitCarArray[3];
+                        string currentEngine = splitCarArray[4];
+                        combinedSkus = '"' + combinedSkus + '"';
+                        resultDataTable.Rows.Add(currentYear, currentMake, currentModel, currentTrim, currentEngine, combinedSkus); // here we will add the cars with the skus to the Grid
+
+                    }
+
+                    ////////////////
+
+
+
+                    //newCSVArray = carReader.ReadLine().Split(',');
+
+                    //we must search the dictionary for the currentVehicle, if it is found, return the sku (Key) and continue searching
+
+
+
+
+
+
+                    this.Invoke(new MethodInvoker(delegate ()
+                    {
+                        loadingBar.PerformStep();
+                        watch.Stop();
+                        linesRemaining--;
+                        linesCompleted++;
+                        var timeForCar = watch.ElapsedMilliseconds;
+                        time = time + timeForCar;
+                        averageTime = time / linesCompleted;
+
+                            // this will tell the approximate time of completion in a date format
+                            timeRemaining.Text = Convert.ToString(DateTime.Now.AddMinutes(((averageTime * linesRemaining) / 1000) / 60));
+
+                    }));
+
+                }
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    loadingBar.Visible = false;
+                    timeRemaining.Visible = false;
+                    estTimeRemainingLabel.Visible = false;
+                    resultGridView.DataSource = resultDataTable;
+                    exportToCSV(resultDataTable);
+                }));
+
+
+            }
+
+
+
+
+
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+        private void writeButton_Click(object sender, EventArgs e)
         {
             if (newFileNameTextBox.Text == "" || newFileNameTextBox.Text == null || newFileNameTextBox.Text == string.Empty)
             {
@@ -134,7 +290,7 @@ namespace CombineFitment
                 workerThread.Start();
             }
 
-            //Thread workerThread1 = new Thread(dictionaryConversionTime(Dictionary<string,string> myDictionary), 0);
+            // Thread workerThread1 = new Thread(dictionaryConversionTime(myDictionary), 0);
             //workerThread1.Start();
 
 
@@ -294,7 +450,7 @@ namespace CombineFitment
             }
         }
 
-        private void dictionaryConversionTime(Dictionary<string,string> myDictionary)
+        private void dictionaryConversionTime(Dictionary<string, List<string>> myDictionary)
         {
             try
             {
@@ -366,52 +522,17 @@ namespace CombineFitment
                         //MessageBox.Show(currentVehicle);
                         //newCSVArray = carReader.ReadLine().Split(',');
 
-                        using (StreamReader skuAndFitmentReader = new StreamReader(filePathFitment)) //open a new stream reader and search for the fitment data and return the sku(s)
-                        {
-                            combinedSkus = "";
+                        //we must search the dictionary for the currentVehicle, if it is found, return the sku (Key) and continue searching
 
-                            while (!skuAndFitmentReader.EndOfStream)
-                            {
-                                currentLine = skuAndFitmentReader.ReadLine();
+                        ////if(myDictionary.ContainsValue(currentVehicle))
+                        ////{
 
-                                if (currentLine.Contains(currentVehicle))// if the car is found , grab the sku
-                                {
-                                    //MessageBox.Show("Car was found in\n " + currentLine);
-                                    if (combinedSkus == "" || combinedSkus == null || combinedSkus == string.Empty)
-                                    {
-
-                                        combinedSkus = currentLine.Substring(0, currentLine.IndexOf(","));
-                                        //MessageBox.Show(combinedSkus);
-                                    }
-                                    else
-                                    {
-
-                                        combinedSkus = combinedSkus + "," + currentLine.Substring(0, currentLine.IndexOf(','));
-                                        //MessageBox.Show(combinedSkus);
-                                    }
-
-                                }
-                            }
-                            if (combinedSkus != "" && combinedSkus != null && combinedSkus != string.Empty)
-                            {
-
-                                combinedSkus = '"' + combinedSkus + '"';
-                            }
-
-                            //combinedSkus = combinedSkus.Replace('"', Convert.ToChar(" "));
-                            //combinedSkus = combinedSkus.Replace(" ", string.Empty);
-                            string[] splitCarArray = new string[4];
-                            splitCarArray = currentCarString.Split('|');
+                        ////}
 
 
-                            ////////////////
-                            string currentYear = splitCarArray[0];
-                            string currentMake = splitCarArray[1];
-                            string currentModel = splitCarArray[2];
-                            string currentTrim = splitCarArray[3];
 
-                            resultDataTable.Rows.Add(currentYear, currentMake, currentModel, currentTrim, combinedSkus); // here we will add the cars with the skus to the Grid
-                        }
+
+
                         this.Invoke(new MethodInvoker(delegate ()
                         {
                             loadingBar.PerformStep();

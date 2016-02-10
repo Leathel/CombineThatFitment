@@ -65,6 +65,7 @@
             this.readFileTextBox.Name = "readFileTextBox";
             this.readFileTextBox.Size = new System.Drawing.Size(178, 20);
             this.readFileTextBox.TabIndex = 1;
+            this.readFileTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\testing\\smallFitmentTest.csv";
             this.readFileTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
@@ -132,6 +133,7 @@
             this.writeFileTextBox.Name = "writeFileTextBox";
             this.writeFileTextBox.Size = new System.Drawing.Size(178, 20);
             this.writeFileTextBox.TabIndex = 5;
+            this.writeFileTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\testing\\smallCarsTest.csv";
             // 
             // resultGridView
             // 
@@ -162,6 +164,7 @@
             this.newFileNameTextBox.Name = "newFileNameTextBox";
             this.newFileNameTextBox.Size = new System.Drawing.Size(256, 20);
             this.newFileNameTextBox.TabIndex = 11;
+            this.newFileNameTextBox.Text = "C:\\Users\\Ben\\Documents\\ShopEddies\\fitment\\testing\\output.csv";
             this.newFileNameTextBox.TextChanged += new System.EventHandler(this.newFileNameTextBox_TextChanged);
             // 
             // label4
